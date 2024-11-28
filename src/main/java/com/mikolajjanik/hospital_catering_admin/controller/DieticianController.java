@@ -33,12 +33,10 @@ public class DieticianController {
         DieticianDetailsDTO dietician = dieticianService.findDieticianById(id);
         return new ResponseEntity<>(dietician, HttpStatus.OK);
     }
-
-    @PostMapping("/register")
-    @ResponseBody
-    public ResponseEntity<Dietician> registerNewDietician(@Valid @RequestBody DieticianDTO dieticianDTO) {
-        Dietician dietician = dieticianService.registerNewDietician(dieticianDTO);
-        return new ResponseEntity<>(dietician, HttpStatus.CREATED);
+    @GetMapping("/email/{name}")
+    public ResponseEntity<Dietician> findDieticianById(@PathVariable("name") String name) {
+        Dietician dietician = dieticianService.findDieticianByEmail(name);
+        return new ResponseEntity<>(dietician, HttpStatus.OK);
     }
 
     @PostMapping("/uploadPicture")
@@ -47,11 +45,5 @@ public class DieticianController {
                                                                  @RequestPart("picture") MultipartFile picture) {
         DieticianDetailsDTO dietician = dieticianService.uploadProfilePicture(id, picture);
         return new ResponseEntity<>(dietician, HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> uploadPicture(@PathVariable("id") Long id) {
-        dieticianService.deleteDieticianById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

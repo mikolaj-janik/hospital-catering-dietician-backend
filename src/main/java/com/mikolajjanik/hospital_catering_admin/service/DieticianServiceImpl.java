@@ -28,7 +28,6 @@ public class DieticianServiceImpl implements DieticianService {
     private final DieticianRepository dieticianRepository;
     private final HospitalRepository hospitalRepository;
     private final WardRepository wardRepository;
-    private final DieticianWardRepository dieticianWardRepository;
 
     @Autowired
     public DieticianServiceImpl(DieticianRepository dieticianRepository,
@@ -38,7 +37,6 @@ public class DieticianServiceImpl implements DieticianService {
         this.dieticianRepository = dieticianRepository;
         this.hospitalRepository = hospitalRepository;
         this.wardRepository = wardRepository;
-        this.dieticianWardRepository = dieticianWardRepository;
     }
 
     @Override
@@ -69,6 +67,17 @@ public class DieticianServiceImpl implements DieticianService {
                 dietician.getHospital(),
                 Base64.getEncoder().encodeToString(rawPicture)
         );
+    }
+
+    @Override
+    @SneakyThrows
+    public Dietician findDieticianByEmail(String name) {
+        Dietician dietician = dieticianRepository.findDieticianByEmail(name);
+
+        if (dietician == null) {
+            throw new DieticianNotFoundException(name);
+        }
+        return dietician;
     }
 
     @Override
@@ -116,37 +125,6 @@ public class DieticianServiceImpl implements DieticianService {
 
     @Override
     @SneakyThrows
-    public Dietician registerNewDietician(DieticianDTO dieticianDTO) {
-        String password = dieticianDTO.getDefaultPassword();
-        Long hospitalId = dieticianDTO.getHospitalId();
-        Hospital hospital = hospitalRepository.findHospitalById(hospitalId);
-        List<Ward> wards = dieticianDTO.getWards();
-
-        if (hospital == null) {
-            throw new HospitalNotFoundException(hospitalId);
-        }
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String encodedPassword = passwordEncoder.encode(password);
-
-        Dietician dietician = new Dietician();
-        dietician.setName(dieticianDTO.getName());
-        dietician.setSurname(dieticianDTO.getSurname());
-        dietician.setHospital(hospital);
-        dietician.setEmail(dieticianDTO.getEmail());
-        dietician.setPassword(encodedPassword);
-        dietician = dieticianRepository.save(dietician);
-
-        for (Ward ward : wards) {
-            DieticianWard dieticianWard = new DieticianWard();
-            dieticianWard.setDietician(dietician);
-            dieticianWard.setWard(ward);
-            dieticianWardRepository.save(dieticianWard);
-        }
-        return dietician;
-    }
-
-    @Override
-    @SneakyThrows
     public DieticianDetailsDTO uploadProfilePicture(Long id, MultipartFile picture) {
         Dietician dietician = dieticianRepository.findDieticianById(id);
 
@@ -165,22 +143,5 @@ public class DieticianServiceImpl implements DieticianService {
                 dietician.getHospital(),
                 Base64.getEncoder().encodeToString(pictureByte)
         );
-    }
-
-    @Override
-    @SneakyThrows
-    public void deleteDieticianById(Long id) {
-        Dietician dietician = dieticianRepository.findDieticianById(id);
-
-        if (dietician == null) {
-            throw new DieticianNotFoundException(id);
-        }
-
-        List<Ward> wards = wardRepository.findWardsByDieticianId(id);
-
-        if (!wards.isEmpty()) {
-            throw new CannotDeleteDieticianException(id);
-        }
-        dieticianRepository.deleteById(id);
     }
 }

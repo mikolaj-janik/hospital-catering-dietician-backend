@@ -13,6 +13,5 @@ public interface WardService {
     Set<Ward> findByHospitalIdAndNameContaining(Long id, String name);
     Ward createWard(NewWardDTO wardDTO);
     Ward updateWard(UpdateWardDTO wardDTO);
-    List<Ward> findWardsByDieticianId(Long id);
-    void deleteWardById(Long id);
+    List<Ward> findWardsByDieticianId(Long id, String name);
 }

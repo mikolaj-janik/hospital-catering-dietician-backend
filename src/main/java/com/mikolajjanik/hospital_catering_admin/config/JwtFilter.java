@@ -32,7 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final ApplicationContext context;
 
-    private final List<String> excludeUrls = List.of("/api/register", "/api/login", "/api/refresh");
+    private final List<String> excludeUrls = List.of("/api/login", "/api/refresh");
 
     @Autowired
     public JwtFilter(JWTService service, ApplicationContext context) {

@@ -10,10 +10,9 @@ import java.util.Set;
 
 public interface DieticianService {
     DieticianDetailsDTO findDieticianById(Long id);
+    Dietician findDieticianByEmail(String name);
     Set<Dietician> findDieticiansByHospitalId(Long id);
     Set<Dietician> findDieticiansByWardId(Long id);
     List<Dietician> findAllDieticians(Long hospitalId);
-    Dietician registerNewDietician(DieticianDTO dieticianDTO);
     DieticianDetailsDTO uploadProfilePicture(Long id, MultipartFile picture);
-    void deleteDieticianById(Long id);
 }

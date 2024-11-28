@@ -1,7 +1,6 @@
 package com.mikolajjanik.hospital_catering_admin.service;
 
 import com.mikolajjanik.hospital_catering_admin.dao.*;
-import com.mikolajjanik.hospital_catering_admin.dto.DietDTO;
 import com.mikolajjanik.hospital_catering_admin.dto.NewWardDTO;
 import com.mikolajjanik.hospital_catering_admin.dto.UpdateWardDTO;
 import com.mikolajjanik.hospital_catering_admin.entity.*;
@@ -23,23 +22,17 @@ public class WardServiceImpl implements WardService {
     private final WardRepository wardRepository;
     private final HospitalRepository hospitalRepository;
     private final DieticianRepository dieticianRepository;
-    private final PatientRepository patientRepository;
     private final DieticianWardRepository dieticianWardRepository;
-
-    private static final String ERROR_MESSAGE_WARD_HAS_PATIENTS = "Ward still has patients, therefore cannot be deleted";
-    private static final String ERROR_MESSAGE_WARD_HAS_DIETICIANS = "Ward still has dieticians assigned, therefore cannot be deleted";
     private static final String POLISH_PHONE_EXTENSION = "+48 ";
 
     @Autowired
     public WardServiceImpl(WardRepository wardRepository,
                            HospitalRepository hospitalRepository,
                            DieticianRepository dieticianRepository,
-                           PatientRepository patientRepository,
                            DieticianWardRepository dieticianWardRepository) {
         this.wardRepository = wardRepository;
         this.hospitalRepository = hospitalRepository;
         this.dieticianRepository = dieticianRepository;
-        this.patientRepository = patientRepository;
         this.dieticianWardRepository = dieticianWardRepository;
     }
 
@@ -170,36 +163,16 @@ public class WardServiceImpl implements WardService {
 
     @Override
     @SneakyThrows
-    public List<Ward> findWardsByDieticianId(Long id) {
+    public List<Ward> findWardsByDieticianId(Long id, String name) {
         Dietician dietician = dieticianRepository.findDieticianById(id);
 
         if (dietician == null) {
             throw new DieticianNotFoundException(id);
         }
-        return wardRepository.findWardsByDieticianId(id);
-    }
 
-    @Override
-    @SneakyThrows
-    public void deleteWardById(Long id) {
-        Ward ward = wardRepository.findWardById(id);
-
-        if (ward == null) {
-            throw new WardNotFoundException(id);
+        if (name.equals("null")) {
+            return wardRepository.findWardsByDieticianId(id);
         }
-
-        List<Patient> patients = patientRepository.getPatientsByWardId(id);
-
-        if (!patients.isEmpty()) {
-            throw new CannotDeleteWardException(ERROR_MESSAGE_WARD_HAS_PATIENTS);
-        }
-
-        List<DieticianWard> dieticians = dieticianWardRepository.findDieticianWardsByWardId(id);
-
-        if (!dieticians.isEmpty()) {
-            throw new CannotDeleteWardException(ERROR_MESSAGE_WARD_HAS_DIETICIANS);
-        }
-
-        wardRepository.deleteById(id);
+        return wardRepository.findWardsByDieticianIdAndName(id, name);
     }
 }

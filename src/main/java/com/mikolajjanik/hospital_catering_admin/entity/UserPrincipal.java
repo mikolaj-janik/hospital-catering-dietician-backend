@@ -9,10 +9,10 @@ import java.util.Collections;
 
 public class UserPrincipal implements UserDetails {
 
-    private Admin admin;
+    private final Dietician dietician;
 
-    public UserPrincipal(Admin admin) {
-        this.admin = admin;
+    public UserPrincipal(Dietician dietician) {
+        this.dietician = dietician;
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -21,12 +21,12 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return admin.getPassword();
+        return dietician.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return admin.getEmail();
+        return dietician.getEmail();
     }
 
     @Override

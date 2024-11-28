@@ -13,6 +13,12 @@ public interface WardRepository extends JpaRepository<Ward, Long> {
     Set<Ward> findWardsByHospitalIdOrderByName(Long id);
     Set<Ward> findWardsByHospitalIdAndNameContainingIgnoreCase(Long id, String name);
 
+    @Query(value = "SELECT oddział.* FROM oddział JOIN dietetyk_oddział ON \n" +
+            "\toddział.id=dietetyk_oddział.oddziałid \n" +
+            "\tjoin dietetyk on dietetyk_oddział.dietetykid=dietetyk.id WHERE \n" +
+            "\tdietetyk.id=:id AND oddział.nazwa ILIKE '%' || :name || '%'; ", nativeQuery = true)
+    List<Ward> findWardsByDieticianIdAndName(Long id, String name);
+
     @Query(value = "SELECT oddział.* FROM " +
             "oddział JOIN dietetyk_oddział ON oddział.id=dietetyk_oddział.oddziałid " +
             "JOIN dietetyk on dietetyk_oddział.dietetykid=dietetyk.id " +

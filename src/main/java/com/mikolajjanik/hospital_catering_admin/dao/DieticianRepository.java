@@ -1,5 +1,6 @@
 package com.mikolajjanik.hospital_catering_admin.dao;
 
+import com.mikolajjanik.hospital_catering_admin.entity.Admin;
 import com.mikolajjanik.hospital_catering_admin.entity.Dietician;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,4 +24,10 @@ public interface DieticianRepository extends JpaRepository<Dietician, Long> {
     @Modifying
     @Query(value = "UPDATE dietetyk SET zdjęcie = :picture WHERE id = :id", nativeQuery = true)
     void uploadPictureById(@Param("id") Long id, @Param("picture") byte[] picture);
+
+
+
+    Dietician findDieticianByEmail(String email);
+    @Query(value = "SELECT zdjęcie FROM dietetyk WHERE email = :email", nativeQuery = true)
+    byte[] findProfilePictureByEmail(@Param("email") String email);
 }

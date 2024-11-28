@@ -64,24 +64,4 @@ public class DietController {
                                               Pageable pageable) {
         return mealService.findMealsByDietIdAndName(id, name, pageable);
     }
-
-    @PostMapping("/add")
-    @ResponseBody
-    public ResponseEntity<Diet> newDiet(@Valid @RequestBody DietDTO dietDTO) {
-        Diet diet = dietService.addDiet(dietDTO);
-        return new ResponseEntity<>(diet, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/update")
-    @ResponseBody
-    public ResponseEntity<Diet> updateDiet(@Valid @RequestBody UpdateDietDTO dietDTO) {
-        Diet diet = dietService.updateDiet(dietDTO);
-        return new ResponseEntity<>(diet, HttpStatus.OK);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteDietById(@PathVariable ("id") Long id) {
-        dietService.deleteDietById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 }

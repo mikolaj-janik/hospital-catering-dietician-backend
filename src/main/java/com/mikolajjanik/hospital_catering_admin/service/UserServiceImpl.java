@@ -1,13 +1,10 @@
 package com.mikolajjanik.hospital_catering_admin.service;
 
-import com.mikolajjanik.hospital_catering_admin.dao.AdminRepository;
-import com.mikolajjanik.hospital_catering_admin.dto.AdminDTO;
+import com.mikolajjanik.hospital_catering_admin.dao.DieticianRepository;
+import com.mikolajjanik.hospital_catering_admin.dto.UserDTO;
 import com.mikolajjanik.hospital_catering_admin.dto.LoginUserDTO;
-import com.mikolajjanik.hospital_catering_admin.dto.NewUserDTO;
-import com.mikolajjanik.hospital_catering_admin.entity.Admin;
+import com.mikolajjanik.hospital_catering_admin.entity.Dietician;
 import com.mikolajjanik.hospital_catering_admin.exception.BadLoginCredentialsException;
-import com.mikolajjanik.hospital_catering_admin.exception.PasswordsNotMatchException;
-import com.mikolajjanik.hospital_catering_admin.exception.UserAlreadyExistException;
 import com.mikolajjanik.hospital_catering_admin.exception.UserNotFoundException;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,56 +18,26 @@ import java.util.Base64;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private AdminRepository adminRepository;
-
-    private AuthenticationManager authenticationManager;
-
-    private JWTService jwtService;
-
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final DieticianRepository dieticianRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JWTService jwtService;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Autowired
-    public UserServiceImpl(AdminRepository adminRepository,
+    public UserServiceImpl(DieticianRepository dieticianRepository,
                            AuthenticationManager authenticationManager,
                            JWTService jwtService) {
-        this.adminRepository = adminRepository;
+        this.dieticianRepository = dieticianRepository;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
-    }
-    @Override
-    @SneakyThrows
-    public Admin register(NewUserDTO user) {
-        String email = user.getEmail();
-        Admin a = adminRepository.findAdminByEmail(email);
-
-        if (a != null) {
-            throw new UserAlreadyExistException();
-        }
-
-        String password = user.getPassword();
-        String repeatedPassword = user.getRepeatedPassword();
-
-        if (!password.equals(repeatedPassword)) {
-            throw new PasswordsNotMatchException();
-        }
-
-        Admin admin = new Admin();
-
-        admin.setPassword(encoder.encode(password));
-
-        admin.setEmail(user.getEmail());
-        admin.setName(user.getName());
-        admin.setSurname(user.getSurname());
-
-        return adminRepository.save(admin);
     }
 
     @Override
     @SneakyThrows
     public String verify(LoginUserDTO user) {
-        Admin admin = adminRepository.findAdminByEmail(user.getEmail());
+        Dietician dietician = dieticianRepository.findDieticianByEmail(user.getEmail());
 
-        if (admin == null || !encoder.matches(user.getPassword(), admin.getPassword())) {
+        if (dietician == null || !encoder.matches(user.getPassword(), dietician.getPassword())) {
             throw new BadLoginCredentialsException();
         }
 
@@ -81,19 +48,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @SneakyThrows
-    public AdminDTO getAdminByEmail(String email) {
-        Admin admin = adminRepository.findAdminByEmail(email);
-        byte[] profilePicture = adminRepository.findProfilePictureByEmail(email);
+    public UserDTO getUserByEmail(String email) {
+        Dietician dietician = dieticianRepository.findDieticianByEmail(email);
+        byte[] profilePicture = dieticianRepository.findProfilePictureByEmail(email);
 
-        if (admin == null) {
+        if (dietician == null) {
             throw new UserNotFoundException(email);
         }
 
-        return new AdminDTO(
-                admin.getId(),
-                admin.getEmail(),
-                admin.getName(),
-                admin.getSurname(),
+        return new UserDTO(
+                dietician.getId(),
+                dietician.getEmail(),
+                dietician.getName(),
+                dietician.getSurname(),
                 Base64.getEncoder().encodeToString(profilePicture));
     }
 }
