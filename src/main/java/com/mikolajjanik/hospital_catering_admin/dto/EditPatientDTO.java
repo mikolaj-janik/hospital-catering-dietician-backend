@@ -4,7 +4,12 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
-public class NewPatientDTO {
+public class EditPatientDTO {
+
+    @NotNull(message = "Field 'id' cannot be null.")
+    @Min(value = 1, message = "Field 'id' must be greater than 0")
+    private Long id;
+
     @NotNull(message = "Field 'name' cannot be null.")
     @NotBlank(message = "Field 'name' cannot be empty.")
     private String name;
@@ -13,19 +18,11 @@ public class NewPatientDTO {
     @NotBlank(message = "Field 'surname' cannot be empty.")
     private String surname;
 
-    @NotNull(message = "Field 'pesel' cannot be null.")
-    @NotBlank(message = "Field 'pesel' cannot be empty.")
+    @NotNull(message = "Field 'login' cannot be null.")
+    @NotBlank(message = "Field 'login' cannot be empty.")
     @Pattern(regexp = "[0-9]{4}[0-3]{1}[0-9]{1}[0-9]{5}",
             message = "This is not a pesel string.")
-    private String pesel;
-
-    @NotNull(message = "Field 'defaultPassword' cannot be null.")
-    @NotBlank(message = "Field 'defaultPassword' cannot be empty.")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?!.* ).{8,16}$",
-            message = "Password must contain one digit from 1 to 9, " +
-                    "one lowercase letter, one uppercase letter, one special character, " +
-                    "no space, and it must be 8-16 characters long")
-    private String defaultPassword;
+    private String login;
 
     @Email(message = "Field 'email': Provided string is not an email.")
     private String email;

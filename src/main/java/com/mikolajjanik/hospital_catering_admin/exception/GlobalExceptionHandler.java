@@ -127,16 +127,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, headers, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(DiaryNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleDiaryNotFoundException(DiaryNotFoundException e) {
-        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
-        return new ResponseEntity<>(errorResponse, headers, HttpStatus.NOT_FOUND);
-    }
 
     @ExceptionHandler(DietMismatchException.class)
     public ResponseEntity<ErrorResponse> handleDietMismatchException(DietMismatchException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(errorResponse, headers, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PatientNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePatientNotFoundException(PatientNotFoundException e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(errorResponse, headers, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(IncorrectMealException.class)

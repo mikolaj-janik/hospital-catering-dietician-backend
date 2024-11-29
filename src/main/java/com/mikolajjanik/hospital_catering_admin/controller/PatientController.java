@@ -1,5 +1,6 @@
 package com.mikolajjanik.hospital_catering_admin.controller;
 
+import com.mikolajjanik.hospital_catering_admin.dto.EditPatientDTO;
 import com.mikolajjanik.hospital_catering_admin.dto.NewPatientDTO;
 import com.mikolajjanik.hospital_catering_admin.entity.Patient;
 import com.mikolajjanik.hospital_catering_admin.service.PatientService;
@@ -21,6 +22,11 @@ public class PatientController {
         this.patientService = patientService;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Patient> getPatientId(@PathVariable("id") Long id) {
+        Patient patient = patientService.findPatientById(id);
+        return new ResponseEntity<>(patient, HttpStatus.OK);
+    }
     @GetMapping("/ward/{id}")
     public ResponseEntity<List<Patient>> getPatientsByWardId(@PathVariable("id") Long wardId, @RequestParam("orderBy") String orderBy) {
         List<Patient> patients = patientService.findPatientsByWardId(wardId, orderBy);
@@ -40,4 +46,17 @@ public class PatientController {
         return new ResponseEntity<>(patient, HttpStatus.CREATED);
     }
 
+    @PostMapping("/edit")
+    @ResponseBody
+    public ResponseEntity<Patient> editPatient(@Valid @RequestBody EditPatientDTO patientDTO) {
+        Patient patient = patientService.editPatient(patientDTO);
+        return new ResponseEntity<>(patient, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @ResponseBody
+    public ResponseEntity<Void> deletePatient(@PathVariable("id") Long id) {
+        patientService.deletePatientById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

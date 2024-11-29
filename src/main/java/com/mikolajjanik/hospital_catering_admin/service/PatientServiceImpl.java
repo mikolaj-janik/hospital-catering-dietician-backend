@@ -4,6 +4,7 @@ import com.mikolajjanik.hospital_catering_admin.dao.DietRepository;
 import com.mikolajjanik.hospital_catering_admin.dao.HospitalRepository;
 import com.mikolajjanik.hospital_catering_admin.dao.PatientRepository;
 import com.mikolajjanik.hospital_catering_admin.dao.WardRepository;
+import com.mikolajjanik.hospital_catering_admin.dto.EditPatientDTO;
 import com.mikolajjanik.hospital_catering_admin.dto.NewPatientDTO;
 import com.mikolajjanik.hospital_catering_admin.entity.Diet;
 import com.mikolajjanik.hospital_catering_admin.entity.Hospital;
@@ -11,6 +12,7 @@ import com.mikolajjanik.hospital_catering_admin.entity.Patient;
 import com.mikolajjanik.hospital_catering_admin.entity.Ward;
 import com.mikolajjanik.hospital_catering_admin.exception.DietNotFoundException;
 import com.mikolajjanik.hospital_catering_admin.exception.HospitalNotFoundException;
+import com.mikolajjanik.hospital_catering_admin.exception.PatientNotFoundException;
 import com.mikolajjanik.hospital_catering_admin.exception.WardNotFoundException;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,5 +103,62 @@ public class PatientServiceImpl implements PatientService {
         patient.setAdmissionDate(LocalDate.now());
 
         return patientRepository.save(patient);
+    }
+
+    @Override
+    @SneakyThrows
+    public Patient findPatientById(Long id) {
+        Patient patient = patientRepository.findPatientById(id);
+
+        if (patient == null) {
+            throw new PatientNotFoundException(id);
+        }
+        return patient;
+    }
+
+    @Override
+    @SneakyThrows
+    public Patient editPatient(EditPatientDTO patientDTO) {
+        Long id = patientDTO.getId();
+        Patient patient = patientRepository.findPatientById(id);
+
+        if (patient == null) {
+            throw new PatientNotFoundException(id);
+        }
+
+        Long wardId = patientDTO.getWardId();
+        Long dietId = patientDTO.getDietId();
+
+        Ward ward = wardRepository.findWardById(wardId);
+        Diet diet = dietRepository.findDietById(dietId);
+
+        if (ward == null) {
+            throw new WardNotFoundException(wardId);
+        }
+
+        if (diet == null) {
+            throw new DietNotFoundException(dietId);
+        }
+
+        patient.setName(patientDTO.getName());
+        patient.setSurname(patientDTO.getSurname());
+        patient.setEmail(patientDTO.getEmail());
+        patient.setLogin(patientDTO.getLogin());
+        patient.setDiet(diet);
+        patient.setWard(ward);
+
+        return patientRepository.save(patient);
+    }
+
+    @Override
+    @SneakyThrows
+    public void deletePatientById(Long id) {
+        Patient patient = patientRepository.findPatientById(id);
+
+        if (patient == null) {
+            throw new PatientNotFoundException(id);
+        }
+
+        patientRepository.deleteById(id);
     }
 }
