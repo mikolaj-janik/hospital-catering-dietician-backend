@@ -5,10 +5,7 @@ import com.mikolajjanik.hospital_catering_admin.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,8 +20,8 @@ public class PatientController {
     }
 
     @GetMapping("/ward/{id}")
-    public ResponseEntity<List<Patient>> getPatientsByWardId(@PathVariable("id") Long wardId) {
-        List<Patient> patients = patientService.findPatientsByWardId(wardId);
+    public ResponseEntity<List<Patient>> getPatientsByWardId(@PathVariable("id") Long wardId, @RequestParam("orderBy") String orderBy) {
+        List<Patient> patients = patientService.findPatientsByWardId(wardId, orderBy);
         return new ResponseEntity<>(patients, HttpStatus.OK);
     }
 

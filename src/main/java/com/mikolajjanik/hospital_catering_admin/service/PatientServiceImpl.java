@@ -29,13 +29,19 @@ public class PatientServiceImpl implements PatientService {
     }
     @Override
     @SneakyThrows
-    public List<Patient> findPatientsByWardId(Long wardId) {
+    public List<Patient> findPatientsByWardId(Long wardId, String orderBy) {
         Ward ward = wardRepository.findWardById(wardId);
 
         if (ward == null) {
             throw new WardNotFoundException(wardId);
         }
-        return patientRepository.getPatientsByWardId(wardId);
+
+        return switch (orderBy) {
+            case "date" -> patientRepository.getPatientsByWardId(wardId);
+            case "diet" -> patientRepository.getPatientsByWardIdOrderByDiet(wardId);
+            case "name" -> patientRepository.getPatientsByWardIdOrderByName(wardId);
+            default -> patientRepository.getPatientsByHospitalId(wardId);
+        };
     }
 
     @Override
