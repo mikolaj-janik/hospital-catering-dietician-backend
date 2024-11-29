@@ -1,7 +1,9 @@
 package com.mikolajjanik.hospital_catering_admin.controller;
 
+import com.mikolajjanik.hospital_catering_admin.dto.NewPatientDTO;
 import com.mikolajjanik.hospital_catering_admin.entity.Patient;
 import com.mikolajjanik.hospital_catering_admin.service.PatientService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,13 @@ public class PatientController {
     public ResponseEntity<List<Patient>> getPatientsByHospitalId(@PathVariable("id") Long hospitalId) {
         List<Patient> patients = patientService.findPatientsByHospitalId(hospitalId);
         return new ResponseEntity<>(patients, HttpStatus.OK);
+    }
+
+    @PostMapping("/register")
+    @ResponseBody
+    public ResponseEntity<Patient> registerPatient(@Valid @RequestBody NewPatientDTO patientDTO) {
+        Patient patient = patientService.registerNewPatient(patientDTO);
+        return new ResponseEntity<>(patient, HttpStatus.CREATED);
     }
 
 }
