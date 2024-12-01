@@ -17,7 +17,6 @@ import java.util.Base64;
 
 @Service
 public class UserServiceImpl implements UserService {
-
     private final DieticianRepository dieticianRepository;
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
@@ -56,11 +55,17 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException(email);
         }
 
+        String finalPicture = "";
+
+        if (profilePicture != null) {
+            finalPicture = Base64.getEncoder().encodeToString(profilePicture);
+        }
+
         return new UserDTO(
                 dietician.getId(),
                 dietician.getEmail(),
                 dietician.getName(),
                 dietician.getSurname(),
-                Base64.getEncoder().encodeToString(profilePicture));
+                finalPicture);
     }
 }
